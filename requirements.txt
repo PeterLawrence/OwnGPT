@@ -1,6 +1,6 @@
 langchain
 pygpt4all
-chromadb==0.3.23
+chromadb
 urllib3
 pdfminer.six==20221105
 python-dotenv

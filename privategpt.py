@@ -3,19 +3,23 @@
 Create ownChat test private gpt
 @author: Lawrence P.J
 """
+
+import chromadb
+from chromadb.config import Settings
+
 from langchain.chains import RetrievalQA
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.llms import GPT4All, LlamaCpp
 
-from constants import CHROMA_SETTINGS
 import owngptsettings
 import sys
 
 
 def private_gpt_generate_msg(human_msg,verbose_output):
     embeddings = HuggingFaceEmbeddings(model_name=owngptsettings.embeddings_model_name)
-    db = Chroma(persist_directory=owngptsettings.persist_directory,collection_name=owngptsettings.collection_name, embedding_function=embeddings, client_settings=CHROMA_SETTINGS)
+    chroma_client = chromadb.PersistentClient(path=owngptsettings.persist_directory,settings=Settings(anonymized_telemetry=False))
+    db = Chroma(persist_directory=owngptsettings.persist_directory,collection_name=owngptsettings.collection_name, embedding_function=embeddings, client = chroma_client)
     retriever = db.as_retriever()
     
     # Prepare the LLM

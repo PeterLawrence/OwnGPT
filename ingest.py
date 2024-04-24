@@ -16,11 +16,14 @@ from langchain.document_loaders import (
     UnstructuredWordDocumentLoader,
 )
 
+import chromadb
+from chromadb.config import Settings
+
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
-from constants import CHROMA_SETTINGS
+
 import owngptsettings
 
 
@@ -80,7 +83,8 @@ def main():
     embeddings = HuggingFaceEmbeddings(model_name=owngptsettings.embeddings_model_name)
     
     # Create and store locally vectorstore
-    db = Chroma.from_documents(texts, embeddings, collection_name=owngptsettings.collection_name, persist_directory=owngptsettings.persist_directory, client_settings=CHROMA_SETTINGS)
+    chroma_client = chromadb.PersistentClient(path=owngptsettings.persist_directory,settings=Settings(anonymized_telemetry=False))
+    db = Chroma.from_documents(texts, embeddings, collection_name=owngptsettings.collection_name, persist_directory=owngptsettings.persist_directory, client = chroma_client)
     db.persist()
     db = None
 
