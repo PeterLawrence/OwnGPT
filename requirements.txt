@@ -1,4 +1,7 @@
 langchain
+langchain_community
+langchain_huggingface
+langchain_chroma
 pygpt4all
 chromadb
 urllib3

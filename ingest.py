@@ -2,7 +2,7 @@ import os
 import glob
 from typing import List
 
-from langchain.document_loaders import (
+from langchain_community.document_loaders import (
     CSVLoader,
     EverNoteLoader,
     PDFMinerLoader,
@@ -20,8 +20,8 @@ import chromadb
 from chromadb.config import Settings
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
 
 import owngptsettings
@@ -68,7 +68,6 @@ def load_documents(source_dir: str) -> List[Document]:
 
 
 def main():
-
     # Load documents and split in chunks
     print(f"Loading documents from {owngptsettings.source_directory}")
     chunk_size = owngptsettings.chunk_size
@@ -85,7 +84,6 @@ def main():
     # Create and store locally vectorstore
     chroma_client = chromadb.PersistentClient(path=owngptsettings.persist_directory,settings=Settings(anonymized_telemetry=False))
     db = Chroma.from_documents(texts, embeddings, collection_name=owngptsettings.collection_name, persist_directory=owngptsettings.persist_directory, client = chroma_client)
-    db.persist()
     db = None
 
 

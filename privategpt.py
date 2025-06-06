@@ -7,16 +7,20 @@ Create ownChat test private gpt
 import chromadb
 from chromadb.config import Settings
 
-from langchain.chains import RetrievalQA
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.llms import GPT4All, LlamaCpp
+#from langchain.chains import RetrievalQA
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
+from langchain_community.llms import GPT4All, LlamaCpp
 
 import owngptsettings
 import sys
 
 
 def private_gpt_generate_msg(human_msg,verbose_output):
+    global res
     embeddings = HuggingFaceEmbeddings(model_name=owngptsettings.embeddings_model_name)
     chroma_client = chromadb.PersistentClient(path=owngptsettings.persist_directory,settings=Settings(anonymized_telemetry=False))
     db = Chroma(persist_directory=owngptsettings.persist_directory,collection_name=owngptsettings.collection_name, embedding_function=embeddings, client = chroma_client)
@@ -32,14 +36,38 @@ def private_gpt_generate_msg(human_msg,verbose_output):
             print(f"Model {model_type} not supported!")
             exit;
     
-    qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever, return_source_documents=True)
-    
-    # Get the answer from the chain
-    res = qa(human_msg)
-    #  print(res)   
-    answer, docs = res['result'], res['source_documents']
-    return answer, docs
+    #qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever, return_source_documents=True)
 
+    system_prompt = (
+        "Use the given context to answer the question. "
+        "If you don't know the answer, say you don't know. "
+        "Use three sentence maximum and keep the answer concise. "
+        "Context: {context}"
+        )
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            ("human", "{input}"),
+            ]
+        )
+    
+    question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    chain = create_retrieval_chain(retriever, question_answer_chain)
+
+    # Get the answer from the chain
+    #res = qa(human_msg)
+    res = chain.invoke({"input": human_msg})
+    if 'answer' in res:
+        answer = res['answer']
+    else:
+        answer = 'Response error'
+    docs = []
+    if 'context' in res:
+        for entry in res['context']:
+            if 'source' in entry.metadata:
+                if not(entry.metadata['source'] in docs):
+                    docs.append(entry.metadata['source'])
+    return answer, docs
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
