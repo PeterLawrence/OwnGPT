@@ -18,6 +18,8 @@ from langchain_community.llms import GPT4All, LlamaCpp
 import owngptsettings
 import sys
 
+import torch
+torch.classes.__path__ = []
 
 def private_gpt_generate_msg(human_msg,verbose_output):
     global res
@@ -29,7 +31,7 @@ def private_gpt_generate_msg(human_msg,verbose_output):
     # Prepare the LLM
     match owngptsettings.model_type:
         case "LlamaCpp":
-            llm = LlamaCpp(model_path=owngptsettings.model_path, n_ctx=owngptsettings.model_n_ctx, n_threads = 8, verbose=verbose_output)
+            llm = LlamaCpp(model_path=owngptsettings.model_path, n_ctx=owngptsettings.model_n_ctx, n_threads = 8, n_batch=512, verbose=verbose_output)
         case "GPT4All":
             llm = GPT4All(model=owngptsettings.model_path, n_ctx=owngptsettings.model_n_ctx, backend='gptj', verbose=verbose_output)
         case _default:

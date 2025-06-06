@@ -9,7 +9,7 @@ source_directory = "." + os.sep + "source_documents"
 embeddings_model_name = "sentence-transformers/all-mpnet-base-v2"
 collection_name = "collection_name"
 model_path = "." + os.sep + "Models" + os.sep + "zephyr-7b-beta.Q4_0.gguf"
-model_n_ctx = 5000
+model_n_ctx = 32768
 model_type = "LlamaCpp"
 #model_type = "GPT4All"
 
