@@ -103,8 +103,18 @@ To install a C++ compiler on Windows 10/11, follow these steps:
 2. Make sure the following components are selected:
    * Universal Windows Platform development
    * C++ CMake tools for Windows
-3. Download the MinGW installer from the [MinGW website](https://sourceforge.net/projects/mingw/).
-4. Run the installer and select the "gcc" component.
+3. Alternatively 
+   * Download the MinGW installer from the [MinGW
+   website](https://sourceforge.net/projects/mingw/).
+   * Run the installer and select the "gcc" component.
+4.  Or use [w64devkit](https://github.com/skeeto/w64devkit)
+   * run w64devkit.exe and set environment variables
+```
+      MAKE_GENERATOR = "MinGW Makefiles" 
+      CMAKE_ARGS = "-DGGML_OPENBLAS=on -DCMAKE_C_COMPILER=d:/utils/w64devkit/bin/gcc.exe -DCMAKE_CXX_COMPILER=d:/utils/w64devkit/bin/g++.exe"
+```
+   * Then to install llama-cpp-python separately, for example _pip install llama-cpp-python_.
+   
 
 
 

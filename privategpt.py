@@ -18,6 +18,7 @@ from langchain_community.llms import GPT4All, LlamaCpp
 import owngptsettings
 import sys
 
+# next two lines for fixing a warning in torch
 import torch
 torch.classes.__path__ = []
 
@@ -43,7 +44,6 @@ def private_gpt_generate_msg(human_msg,verbose_output):
     system_prompt = (
         "Use the given context to answer the question. "
         "If you don't know the answer, say you don't know. "
-        "Use three sentence maximum and keep the answer concise. "
         "Context: {context}"
         )
     prompt = ChatPromptTemplate.from_messages(
