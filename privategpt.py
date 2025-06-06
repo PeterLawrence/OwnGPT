@@ -7,7 +7,6 @@ Create ownChat test private gpt
 import chromadb
 from chromadb.config import Settings
 
-#from langchain.chains import RetrievalQA
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
@@ -38,8 +37,6 @@ def private_gpt_generate_msg(human_msg,verbose_output):
         case _default:
             print(f"Model {model_type} not supported!")
             exit;
-    
-    #qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever, return_source_documents=True)
 
     system_prompt = (
         "Use the given context to answer the question. "
@@ -54,10 +51,11 @@ def private_gpt_generate_msg(human_msg,verbose_output):
         )
     
     question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    # note the next statement populates {context} automatically in system_prompt above
+    # this is the documents information
     chain = create_retrieval_chain(retriever, question_answer_chain)
 
     # Get the answer from the chain
-    #res = qa(human_msg)
     res = chain.invoke({"input": human_msg})
     if 'answer' in res:
         answer = res['answer']
