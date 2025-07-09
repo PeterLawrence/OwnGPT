@@ -3,15 +3,10 @@
 Create ownChat web application streamlit and private gpt
 @author: Avinash G
 """
-#from dotenv import load_dotenv
 import streamlit as st
-import os
-from fastapi import FastAPI, UploadFile, File
-from typing import List, Optional
-import urllib.parse
 
 import owngptsettings
-import  privategpt
+import privategpt
 
 
 def get_text():
@@ -53,5 +48,3 @@ if st.session_state['Bot_msg']:
         st.markdown("BOT :- "+" "+st.session_state["Bot_msg"][i])
         st.markdown("DOCS :- "+" "+st.session_state["Docs_msg"][i])
         st.markdown("HUMAN :- "+"\n"+st.session_state['History_msg'][i])
- 
-        
